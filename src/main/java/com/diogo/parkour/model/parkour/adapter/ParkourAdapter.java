@@ -8,6 +8,7 @@ import com.diogo.parkour.util.ConfigurationAdapter;
 import com.diogo.parkour.util.Serializer;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,14 +17,20 @@ public class ParkourAdapter implements ConfigurationAdapter<Parkour> {
     @Override
     public Parkour adapt(ConfigurationSection section) {
 
-        CheckPoint start = new CheckPointStartImpl(Serializer.locationDeserializer(section.getString("start")));
-        CheckPoint end = new CheckPointStartImpl(Serializer.locationDeserializer(section.getString("end")));
-        Set<CheckPoint> checkPoints = section.getStringList("checkpoints")
+        Set<CheckPoint> checkPoints = section.contains("checkpoints") ? section.getStringList("checkpoints")
                 .stream()
                 .map(str -> new CheckPointImpl(Serializer.locationDeserializer(str)))
-                .collect(Collectors.toSet());
-        checkPoints.add(start);
-        checkPoints.add(end);
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        if (section.contains("start")) {
+            CheckPoint start = new CheckPointStartImpl(Serializer.locationDeserializer(section.getString("start")));
+            checkPoints.add(start);
+        }
+
+        if (section.contains("end")) {
+            CheckPoint end = new CheckPointStartImpl(Serializer.locationDeserializer(section.getString("end")));
+            checkPoints.add(end);
+        }
 
         return new Parkour(checkPoints);
     }

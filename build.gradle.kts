@@ -27,9 +27,16 @@ tasks.withType<JavaCompile> {
     targetCompatibility = "17"
 }
 
+tasks.withType<Jar> {
+    destinationDirectory = File("/home/diogo/Área de Trabalho/Servidor/plugins/")
+}
+
 bukkit {
     name = "parkour"
     prefix = "parkour"
     version = "${project.version}"
     main = "com.diogo.parkour.ParkourPlugin"
+    commands {
+        register("parkour")
+    }
 }
